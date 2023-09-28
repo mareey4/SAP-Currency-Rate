@@ -5,7 +5,6 @@
 package Currency_Exchange;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -18,18 +17,21 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import org.json.JSONObject;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import org.json.JSONException;
 
 /**
  *
@@ -56,11 +58,16 @@ public class Exchange extends JFrame {
     protected String apiRatesURL = "http://api.exchangeratesapi.io/v1/latest?access_key=" + apiKey + "&base=";
     URL url;
     protected BufferedReader br;
-    protected Map<String, String> currencyMap = new HashMap<>();
+    protected Map<String, String> currencyNameMap = new HashMap<>();
+    protected List<Map.Entry<String, String>> sortedCurrencyNames;
+    protected Map<String, Double> currencyRatesMap = new HashMap<>();
+    protected List<Map.Entry<String, Double>> sortedCurrencyRates;
     protected ArrayList<JComboBox<String>> currencyCBList;
     protected Map<Integer, JComboBox<String>> cbList = new HashMap<>();
     protected int[] matrixSize = {3, 4, 5, 6, 7, 8};
     protected int selectedSize;
+    protected String baseCurrency = "";
+    protected String[] selectedCurrency;
 
     public Exchange() {
         this.toolKit = Toolkit.getDefaultToolkit();
@@ -193,7 +200,12 @@ public class Exchange extends JFrame {
                     label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
                     cellPanel.add(label);
                 } else {
-                    JLabel label = new JLabel("" + ((row * size) + col + 1));
+                    JLabel label = new JLabel();
+                    String text = "";
+
+                    // Working on logic to display exchange rates here
+
+                    label.setText(text);
                     label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
                     cellPanel.add(label);
                 }
@@ -208,7 +220,6 @@ public class Exchange extends JFrame {
     private void createComboBoxes() {
         comboboxPanel.removeAll();
         comboboxPanel.setLayout(new GridLayout(selectedSize, 1));
-        ArrayList<String> currencyList = new ArrayList<>(currencyMap.keySet());
         String[] labels = {"A", "B", "C", "D", "E", "F", "G", "H"};
 
         for (int i = 0; i < selectedSize; i++) {
@@ -218,10 +229,12 @@ public class Exchange extends JFrame {
             panel.add(label);
 
             JComboBox<String> comboBox = new JComboBox<>();
-            cbList.put(i, comboBox);
-            for (String key : currencyList) {
-                comboBox.addItem(key);
+
+            for (Map.Entry<String, String> entry : sortedCurrencyNames) {
+                comboBox.addItem(entry.getKey());
             }
+
+            cbList.put(i, comboBox);
 
             comboBox.setSelectedIndex(-1);
             Dimension comboBoxSize = new Dimension(80, 30);
@@ -234,6 +247,14 @@ public class Exchange extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     JComboBox<String> selectedComboBox = (JComboBox<String>) e.getSource();
                     String selectedCurrency = (String) selectedComboBox.getSelectedItem();
+
+                    if (selectedComboBox.equals(cbList.get(0))) {
+                        baseCurrency = selectedCurrency;
+                        getRates(baseCurrency);
+                    }
+
+                    int size = selectedSize + 1;
+                    createMatrix(size);
                 }
             });
         }
@@ -261,20 +282,54 @@ public class Exchange extends JFrame {
                 JSONObject symbols = jsonResponse.getJSONObject("symbols");
 
                 for (String key : symbols.keySet()) {
-                    String value = symbols.getString(key);
-                    currencyMap.put(value, key);
+                    currencyNameMap.put(key, symbols.getString(key));
                 }
+
+                sortedCurrencyNames = new ArrayList<>(currencyNameMap.entrySet());
+                Collections.sort(sortedCurrencyNames, Map.Entry.comparingByKey());
             } else {
                 System.err.println("API request failed with response code: " + responseCode);
             }
 
             connection.disconnect();
-        } catch (Exception e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
     }
 
     private void getRates(String currencyCode) {
-        // Code later
+        try {
+            url = new URL(apiRatesURL + currencyCode);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    response.append(line);
+                }
+
+                br.close();
+
+                JSONObject jsonResponse = new JSONObject(response.toString());
+                JSONObject symbols = jsonResponse.getJSONObject("rates");
+
+                for (String key : symbols.keySet()) {
+                    double value = symbols.getDouble(key);
+                    currencyRatesMap.put(key, value);
+                }
+
+                sortedCurrencyRates = new ArrayList<>(currencyRatesMap.entrySet());
+                Collections.sort(sortedCurrencyRates, Map.Entry.comparingByKey());
+            } else {
+                System.err.println("API request failed with response code: " + responseCode);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
