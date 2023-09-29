@@ -55,18 +55,22 @@ public class Exchange extends JFrame {
     private final Dimension screenDim;
     protected String apiKey = "a7ab00cb947f9df98b98bbde56720152";
     protected String apiSymbolsURL = "http://api.exchangeratesapi.io/v1/symbols?access_key=" + apiKey;
-    protected String apiRatesURL = "http://api.exchangeratesapi.io/v1/latest?access_key=" + apiKey + "&base=";
-    URL url;
+    protected String apiRatesURL = "http://api.exchangeratesapi.io/v1/latest?access_key=" + apiKey;
+    protected URL url;
     protected BufferedReader br;
     protected Map<String, String> currencyNameMap = new HashMap<>();
     protected List<Map.Entry<String, String>> sortedCurrencyNames;
     protected Map<String, Double> currencyRatesMap = new HashMap<>();
     protected List<Map.Entry<String, Double>> sortedCurrencyRates;
     protected ArrayList<JComboBox<String>> currencyCBList;
-    protected Map<Integer, JComboBox<String>> cbList = new HashMap<>();
-    protected int[] matrixSize = {3, 4, 5, 6, 7, 8};
+    protected JComboBox<String>[] cbList;
+    protected final int[] matrixSize = {3, 4, 5, 6, 7, 8};
+    protected final String[] labels = {"A", "B", "C", "D", "E", "F", "G", "H"};
+    protected JLabel[][] matrixArray;
+    protected Rate[][] ratesArray;
     protected int selectedSize;
-    protected String baseCurrency = "";
+    protected String baseCurrencyOne = "";
+    protected String baseCurrencyTwo = "";
     protected String[] selectedCurrency;
 
     public Exchange() {
@@ -75,6 +79,7 @@ public class Exchange extends JFrame {
         this.screenWidth = screenDim.width;
         this.screenHeight = screenDim.height;
         getCurrencyNames();
+        getRates();
         setComponents();
     }
 
@@ -108,16 +113,16 @@ public class Exchange extends JFrame {
 
         selectedSize = (int) matrixSizeCB.getSelectedItem();
         int size = selectedSize + 1;
-        createMatrix(size);
         createComboBoxes();
+        createMatrix(size);
 
         matrixSizeCB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectedSize = (int) matrixSizeCB.getSelectedItem();
                 int size = selectedSize + 1;
-                createMatrix(size);
                 createComboBoxes();
+                createMatrix(size);
             }
         });
     }
@@ -172,10 +177,20 @@ public class Exchange extends JFrame {
     }
 
     private void createMatrix(int size) {
+        if (matrixArray != null) {
+            matrixArray = null;
+        }
+
+        if (ratesArray != null) {
+            ratesArray = null;
+        }
+
+        matrixArray = new JLabel[selectedSize][selectedSize];
+        ratesArray = new Rate[selectedSize][selectedSize];
         matrix.removeAll();
         matrix.setLayout(new GridLayout(size, size));
         String matrixKey = "From/To";
-        String[] labels = {"A", "B", "C", "D", "E", "F", "G", "H"};
+        calculateExchangeRates();
 
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -195,19 +210,22 @@ public class Exchange extends JFrame {
                     JLabel label = new JLabel(labels[row - 1]);
                     label.setFont(new Font("Segoe UI", Font.BOLD, 15));
                     cellPanel.add(label);
-                } else if (row != 0 && col != 0 && row == col) {
-                    JLabel label = new JLabel("1");
-                    label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-                    cellPanel.add(label);
                 } else {
                     JLabel label = new JLabel();
                     String text = "";
 
-                    // Working on logic to display exchange rates here
+                    if ((row - 1) < selectedSize && (col - 1) < selectedSize &&
+                        ratesArray[(row - 1)][(col - 1)] != null && ratesArray[(row - 1)][(col - 1)].rate != 0.0) {
+                        text += String.format("%.3f", ratesArray[(row - 1)][(col - 1)].rate);
+                    }
 
                     label.setText(text);
                     label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
                     cellPanel.add(label);
+                    
+                    if (row < selectedSize && col < selectedSize) {
+                        matrixArray[row][col] = label;
+                    }
                 }
 
                 matrix.add(cellPanel);
@@ -218,9 +236,13 @@ public class Exchange extends JFrame {
     }
 
     private void createComboBoxes() {
+        if (cbList != null) {
+            cbList = null;
+        }
+
+        cbList = new JComboBox[selectedSize];
         comboboxPanel.removeAll();
         comboboxPanel.setLayout(new GridLayout(selectedSize, 1));
-        String[] labels = {"A", "B", "C", "D", "E", "F", "G", "H"};
 
         for (int i = 0; i < selectedSize; i++) {
             JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -234,7 +256,7 @@ public class Exchange extends JFrame {
                 comboBox.addItem(entry.getKey());
             }
 
-            cbList.put(i, comboBox);
+            cbList[i] = comboBox;
 
             comboBox.setSelectedIndex(-1);
             Dimension comboBoxSize = new Dimension(80, 30);
@@ -245,14 +267,6 @@ public class Exchange extends JFrame {
             comboBox.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    JComboBox<String> selectedComboBox = (JComboBox<String>) e.getSource();
-                    String selectedCurrency = (String) selectedComboBox.getSelectedItem();
-
-                    if (selectedComboBox.equals(cbList.get(0))) {
-                        baseCurrency = selectedCurrency;
-                        getRates(baseCurrency);
-                    }
-
                     int size = selectedSize + 1;
                     createMatrix(size);
                 }
@@ -297,9 +311,9 @@ public class Exchange extends JFrame {
         }
     }
 
-    private void getRates(String currencyCode) {
+    private void getRates() {
         try {
-            url = new URL(apiRatesURL + currencyCode);
+            url = new URL(apiRatesURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
@@ -325,11 +339,45 @@ public class Exchange extends JFrame {
 
                 sortedCurrencyRates = new ArrayList<>(currencyRatesMap.entrySet());
                 Collections.sort(sortedCurrencyRates, Map.Entry.comparingByKey());
+
+                for (Map.Entry<String, Double> entry : sortedCurrencyRates) {
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
+                }
             } else {
                 System.err.println("API request failed with response code: " + responseCode);
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void calculateExchangeRates() {
+        for (int row = 0; row < selectedSize; row++) {
+            for (int col = 0; col < selectedSize; col++) {
+                Rate exRate;
+                
+                if (cbList[row].getSelectedItem() != null && cbList[col].getSelectedItem() != null) {
+                    String currencyA = (String) cbList[row].getSelectedItem();
+                    double fromEUDA = currencyRatesMap.get(currencyA);
+
+                    String currencyB = (String) cbList[col].getSelectedItem();
+                    double fromEUDB = currencyRatesMap.get(currencyB);
+
+                    double rate = (fromEUDB / fromEUDA);
+
+                    exRate = new Rate(labels[row], labels[col], rate);
+                } else {
+                    double rate = 0.0;
+                    
+                    if (row == col) {
+                        rate = 1.0;
+                    }
+                    
+                    exRate = new Rate(labels[row], labels[col], rate);
+                }
+                
+                ratesArray[row][col] = exRate;
+            }
         }
     }
 }
