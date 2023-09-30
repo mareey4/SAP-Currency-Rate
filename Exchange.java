@@ -45,12 +45,18 @@ public class Exchange extends JFrame {
     private JPanel matrix;
     private JPanel matrixPanel;
     private JPanel comboboxPanel;
+    private JPanel currencyGraphPanel;
+    private JLabel cGraphLabel;
+    private JPanel currencyGraph;
+    private JPanel negativeGraphPanel;
+    private JLabel nGraphLabel;
+    private JPanel negativeGraph;
     private JPanel mainPanel;
 
     protected final int screenWidth;
     protected final int screenHeight;
-    protected final int width = 1300;
-    protected final int height = 900;
+    protected final int width = 955;
+    protected final int height = 950;
     private final Toolkit toolKit;
     private final Dimension screenDim;
     protected String apiKey = "a7ab00cb947f9df98b98bbde56720152";
@@ -78,8 +84,8 @@ public class Exchange extends JFrame {
         this.screenDim = toolKit.getScreenSize();
         this.screenWidth = screenDim.width;
         this.screenHeight = screenDim.height;
-        getCurrencyNames();
-        getRates();
+        getCurrencyNames(); // Comment for testing
+        getRates(); // Comment for testing
         setComponents();
     }
 
@@ -87,16 +93,24 @@ public class Exchange extends JFrame {
         sizeLabel = new JLabel();
         matrixSizeCB = new JComboBox<>();
         inputsPanel = new JPanel();
-        matrix = new JPanel();
-        matrixPanel = new JPanel();
-        comboboxPanel = new JPanel();
+        matrix = new JPanel(); // Comment for testing
+        matrixPanel = new JPanel(); // Comment for testing
+        comboboxPanel = new JPanel(); // Comment for testing
+        currencyGraphPanel = new JPanel();
+        cGraphLabel = new JLabel();
+        negativeGraphPanel = new JPanel();
+        nGraphLabel = new JLabel();
         mainPanel = new JPanel();
 
         setSizeLabel();
         setMatrixSizeCB();
         setInputsPanel();
-        setMatrixPanel();
-        setComboBoxPanel();
+        setMatrixPanel(); // Comment for testing
+        setComboBoxPanel(); // Comment for testing
+        setCurrencyGraphPanel();
+        setCGraphLabel();
+        setNegativeGraphPanel();
+        setNGraphLabel();
         setMainPanel();
         setFrame();
     }
@@ -112,23 +126,27 @@ public class Exchange extends JFrame {
         }
 
         selectedSize = (int) matrixSizeCB.getSelectedItem();
-        int size = selectedSize + 1;
-        createComboBoxes();
-        createMatrix(size);
+        int size = selectedSize + 1; // Comment for testing
+        createComboBoxes(); // Comment for testing
+        createMatrix(size); // Comment for testing
+        createCurrencyGraph();
+        createNegativeGraph();
 
         matrixSizeCB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectedSize = (int) matrixSizeCB.getSelectedItem();
-                int size = selectedSize + 1;
-                createComboBoxes();
-                createMatrix(size);
+                int size = selectedSize + 1; // Comment for testing
+                createComboBoxes(); // Comment for testing
+                createMatrix(size); // Comment for testing
+                createCurrencyGraph();
+                createNegativeGraph();
             }
         });
     }
 
     private void setInputsPanel() {
-        inputsPanel.setBounds(10, 10, 200, 30);
+        inputsPanel.setBounds(0, 10, 200, 30);
         inputsPanel.setLayout(new FlowLayout());
 
         inputsPanel.add(sizeLabel);
@@ -136,14 +154,36 @@ public class Exchange extends JFrame {
     }
 
     private void setMatrixPanel() {
-        matrixPanel.setBounds(220, 10, 450, 280);
+        matrixPanel.setBounds(220, 10, 720, 280);
         matrixPanel.setLayout(new FlowLayout());
 
         matrixPanel.add(matrix);
     }
 
     private void setComboBoxPanel() {
-        comboboxPanel.setBounds(10, 50, 200, 250);
+        comboboxPanel.setBounds(10, 50, 200, 280);
+    }
+
+    private void setCurrencyGraphPanel() {
+        currencyGraphPanel.setBounds(0, 370, 450, 450);
+        currencyGraphPanel.setLayout(null);
+    }
+    
+    private void setCGraphLabel() {
+        cGraphLabel.setBounds(130, 350, 300, 17);
+        cGraphLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        cGraphLabel.setText("Currency Exchange Graph");
+    }
+    
+    private void setNegativeGraphPanel() {
+        negativeGraphPanel.setBounds(450, 370, 450, 450);
+        negativeGraphPanel.setLayout(null);
+    }
+    
+    private void setNGraphLabel() {
+        nGraphLabel.setBounds(580, 350, 300, 17);
+        nGraphLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        nGraphLabel.setText("Negative Logarithm Graph");
     }
 
     private void setMainPanel() {
@@ -151,8 +191,12 @@ public class Exchange extends JFrame {
         mainPanel.setLayout(null);
 
         mainPanel.add(inputsPanel);
-        mainPanel.add(comboboxPanel);
-        mainPanel.add(matrixPanel);
+        mainPanel.add(comboboxPanel); // Comment for testing
+        mainPanel.add(matrixPanel); // Comment for testing
+        mainPanel.add(currencyGraphPanel);
+        mainPanel.add(cGraphLabel);
+        mainPanel.add(negativeGraphPanel);
+        mainPanel.add(nGraphLabel);
     }
 
     private void setFrame() {
@@ -195,7 +239,7 @@ public class Exchange extends JFrame {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 JPanel cellPanel = new JPanel();
-                cellPanel.setPreferredSize(new Dimension(50, 30));
+                cellPanel.setPreferredSize(new Dimension(80, 30));
                 cellPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
                 if (row == 0 && col == 0) {
@@ -214,15 +258,15 @@ public class Exchange extends JFrame {
                     JLabel label = new JLabel();
                     String text = "";
 
-                    if ((row - 1) < selectedSize && (col - 1) < selectedSize &&
-                        ratesArray[(row - 1)][(col - 1)] != null && ratesArray[(row - 1)][(col - 1)].rate != 0.0) {
+                    if ((row - 1) < selectedSize && (col - 1) < selectedSize
+                            && ratesArray[(row - 1)][(col - 1)] != null && ratesArray[(row - 1)][(col - 1)].rate != 0.0) {
                         text += String.format("%.3f", ratesArray[(row - 1)][(col - 1)].rate);
                     }
 
                     label.setText(text);
                     label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
                     cellPanel.add(label);
-                    
+
                     if (row < selectedSize && col < selectedSize) {
                         matrixArray[row][col] = label;
                     }
@@ -355,7 +399,7 @@ public class Exchange extends JFrame {
         for (int row = 0; row < selectedSize; row++) {
             for (int col = 0; col < selectedSize; col++) {
                 Rate exRate;
-                
+
                 if (cbList[row].getSelectedItem() != null && cbList[col].getSelectedItem() != null) {
                     String currencyA = (String) cbList[row].getSelectedItem();
                     double fromEUDA = currencyRatesMap.get(currencyA);
@@ -368,16 +412,104 @@ public class Exchange extends JFrame {
                     exRate = new Rate(labels[row], labels[col], rate);
                 } else {
                     double rate = 0.0;
-                    
+
                     if (row == col) {
                         rate = 1.0;
                     }
-                    
+
                     exRate = new Rate(labels[row], labels[col], rate);
                 }
-                
+
                 ratesArray[row][col] = exRate;
             }
         }
+    }
+    
+    private void createNegativeGraph() {
+        if (negativeGraph != null) {
+            negativeGraphPanel.remove(negativeGraph);
+        }
+
+        switch (selectedSize) {
+            case 3:
+                SizeThree three = new SizeThree();
+                negativeGraph = new Graph(three);
+
+                break;
+            case 4:
+                SizeFour four = new SizeFour();
+                negativeGraph = new Graph(four);
+                
+                break;
+            case 5:
+                SizeFive five = new SizeFive();
+                negativeGraph = new Graph(five);
+                
+                break;
+            case 6:
+                SizeSix six = new SizeSix();
+                negativeGraph = new Graph(six);
+                
+                break;
+            case 7:
+                SizeSeven seven = new SizeSeven();
+                negativeGraph = new Graph(seven);
+                
+                break;
+            case 8:
+                SizeEight eight = new SizeEight();
+                negativeGraph = new Graph(eight);
+                
+                break;
+        }
+        
+        negativeGraph.setBounds(0, 0, 450, 450);
+        negativeGraphPanel.add(negativeGraph);
+        negativeGraphPanel.revalidate();
+        negativeGraphPanel.repaint();
+    }
+
+    private void createCurrencyGraph() {
+        if (currencyGraph != null) {
+            currencyGraphPanel.remove(currencyGraph);
+        }
+
+        switch (selectedSize) {
+            case 3:
+                SizeThree three = new SizeThree();
+                currencyGraph = new Graph(three);
+
+                break;
+            case 4:
+                SizeFour four = new SizeFour();
+                currencyGraph = new Graph(four);
+                
+                break;
+            case 5:
+                SizeFive five = new SizeFive();
+                currencyGraph = new Graph(five);
+                
+                break;
+            case 6:
+                SizeSix six = new SizeSix();
+                currencyGraph = new Graph(six);
+                
+                break;
+            case 7:
+                SizeSeven seven = new SizeSeven();
+                currencyGraph = new Graph(seven);
+                
+                break;
+            case 8:
+                SizeEight eight = new SizeEight();
+                currencyGraph = new Graph(eight);
+                
+                break;
+        }
+        
+        currencyGraph.setBounds(0, 0, 450, 450);
+        currencyGraphPanel.add(currencyGraph);
+        currencyGraphPanel.revalidate();
+        currencyGraphPanel.repaint();
     }
 }
