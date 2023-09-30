@@ -13,10 +13,14 @@ import java.util.Map;
  */
 public class Node {
     String name;
+    int x;
+    int y;
     Map<Node, Double> links;
     
-    public Node(String name) {
+    public Node(String name, int x, int y) {
         this.name = name;
+        this.x = x;
+        this.y = y;
         this.links = new HashMap<>();
     }
     
