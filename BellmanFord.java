@@ -8,6 +8,7 @@ public class BellmanFord {
     public int[] bellmanFord(int[][] graph, int s) {
         int N = graph.length;
         // Initialize distances, Base Case
+        //comment to test
         int[] d = new int[N];
         for (int i = 0; i < N; i++) {
             d[i] = INF;
