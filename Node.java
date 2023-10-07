@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  *
- * @author snipi we still testing
+ * @author m4ria
  */
 public class Node {
     String name;

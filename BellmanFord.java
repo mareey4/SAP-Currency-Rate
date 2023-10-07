@@ -1,5 +1,13 @@
-package comp611_currency_assignment;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package Currency_Exchange;
 
+/**
+ *
+ * @author snipi
+ */
 // Reference code for Bellman Ford Algorithm in Java
 public class BellmanFord {
     // Representation of the infinity distance
@@ -8,7 +16,6 @@ public class BellmanFord {
     public int[] bellmanFord(int[][] graph, int s) {
         int N = graph.length;
         // Initialize distances, Base Case
-        //comment to test
         int[] d = new int[N];
         for (int i = 0; i < N; i++) {
             d[i] = INF;

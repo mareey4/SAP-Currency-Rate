@@ -6,17 +6,15 @@ package Currency_Exchange;
 
 /**
  *
- * @author snipi
+ * @author m4ria
  */
 public class Shapes {
     final int dotSize = 25;
     int size;
     Node[] nodes;
-    Arrow[] arrows;
     
     public Shapes(int size) {
         this.size = size;
         this.nodes = new Node[this.size];
-        this.arrows = new Arrow[(this.size * 2)];
     }
 }
