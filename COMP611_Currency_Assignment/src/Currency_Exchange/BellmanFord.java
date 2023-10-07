@@ -61,11 +61,5 @@ public class BellmanFord {
         graph[4][0] = 2;
         graph[4][2] = 7;
 
-        BellmanFord bf = new BellmanFord();
-        int[] distances = bf.bellmanFord(graph, 0);
-        // Print distances
-        for (int i = 0; i < N; i++) {
-            System.out.println("Distance to node " + i + " is: " + distances[i]);
-        }
     }
 }
