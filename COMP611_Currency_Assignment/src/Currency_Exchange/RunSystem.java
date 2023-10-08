@@ -11,6 +11,10 @@ package Currency_Exchange;
 public class RunSystem {
     
     public static void main(String[] args) {
-        Exchange exchange = new Exchange();
+        Exchange exchangeOne = new Exchange();
+        Exchange exchangeTwo = new Exchange();
+        
+        exchangeOne.setBounds(0, 0, exchangeOne.width, exchangeOne.height);
+        exchangeTwo.setBounds(exchangeOne.width, 0, exchangeTwo.width, exchangeTwo.height);
     }
 }

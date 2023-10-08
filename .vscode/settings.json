@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "COMP611_Currency_Assignment/json-20230618.jar"
+    ]
+}
