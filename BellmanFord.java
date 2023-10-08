@@ -74,8 +74,8 @@ public class BellmanFord{
     for (int k = 0; k < numCountries; k++) {
         for (int i = 0; i < numCountries; i++) {
             for (int j = 0; j < numCountries; j++) {
-                if (distances[i][k] * distances[k][j] < distances[i][j]) {
-                    distances[i][j] = distances[i][k] * distances[k][j];
+                if (distances[i][k] + distances[k][j] < distances[i][j]) {
+                    distances[i][j] = distances[i][k] + distances[k][j];
                     next[i][j] = next[i][k]; // Update "next" array
                 }
             }
