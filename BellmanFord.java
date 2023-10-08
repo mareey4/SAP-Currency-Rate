@@ -4,6 +4,7 @@
  */
 package Currency_Exchange;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +64,8 @@ public class BellmanFord{
 
     for (int i = 0; i < numCountries; i++) {
         for (int j = 0; j < numCountries; j++) {
-            distances[i][j] = -Math.log(rates[i][j].rate);
+            double rateToBeRounded = -Math.log(rates[i][j].rate);
+            distances[i][j] = Rounded(rateToBeRounded);
             next[i][j] = j; // Initialize "next" array for reconstructing the path
         }
     }
@@ -129,7 +131,8 @@ public class BellmanFord{
     
         for (int i = 0; i < numCountries; i++) {
             for (int j = 0; j < numCountries; j++) {
-                distances[i][j] = rates[i][j].rate;
+                double rateToBeRounded = rates[i][j].rate;
+                distances[i][j] = Rounded(rateToBeRounded);
                 next[i][j] = j; // Initialize "next" array for reconstructing the path
             }
         }
@@ -183,4 +186,9 @@ public void printDistance(Rate[][] rateArray, BellmanFord bf)
          System.out.println("Distance from source to vertex " + i + ": " + distances[i]);        
     }
 }
+
+    public double Rounded(double value) {
+        DecimalFormat decimalFormat = new DecimalFormat("#.###");   
+        return Double.parseDouble(decimalFormat.format(value));
+    }
 }
