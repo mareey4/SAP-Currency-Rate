@@ -75,15 +75,14 @@ public class Exchange extends JFrame {
     protected JLabel[][] matrixArray;
     protected Rate[][] ratesArray;
     protected int selectedSize;
-    protected String baseCurrencyOne = "";
-    protected String baseCurrencyTwo = "";
-    protected String[] selectedCurrency;
+    protected BellmanFord bf;
 
     public Exchange() {
         this.toolKit = Toolkit.getDefaultToolkit();
         this.screenDim = toolKit.getScreenSize();
         this.screenWidth = screenDim.width;
         this.screenHeight = screenDim.height;
+        this.bf = new BellmanFord();
         getCurrencyNames(); // Comment for testing
         getRates(); // Comment for testing
         setComponents();
@@ -421,6 +420,29 @@ public class Exchange extends JFrame {
                 }
 
                 ratesArray[row][col] = exRate;
+            }
+        }
+
+        if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
+            bf.printDistance(ratesArray, bf);
+            List<String> negativeCycle = bf.findNegativeCycle(ratesArray);
+            List<String> arbitrage = bf.findArbitrageOpportunity(ratesArray);
+            if (negativeCycle != null) {
+                System.out.println("Negative cycle");
+                for (int i = 0; i < negativeCycle.size(); i++) {
+                    System.out.print(negativeCycle.get(i) + " ");
+                }
+            } else {
+                System.out.println("No negative cycle");
+            }
+            System.out.println();
+            if (arbitrage != null) {
+                System.out.println("Arbitrage opitunity: ");
+                for (int i = 0; i < arbitrage.size(); i++) {
+                    System.out.print(arbitrage.get(i) + " ");
+                }
+            } else {
+                System.out.println("No arbitrage opitunity");
             }
         }
     }
