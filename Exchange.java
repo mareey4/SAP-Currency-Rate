@@ -1109,7 +1109,7 @@ public class Exchange extends JFrame {
         negativeGraphPanel = new JPanel();
         nGraphLabel = new JLabel();
         mainPanel = new JPanel();
-        updatedGraph = new Graph(shapes, ratesArray);
+        updatedGraph = new Graph(shapes, this);
 
         setSizeLabel();
         setMatrixSizeCB();
@@ -1429,7 +1429,35 @@ public class Exchange extends JFrame {
 
                 ratesArray[row][col] = exRate;
             }
+            
         }
+//      if(ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
+//                bf.printDistance(ratesArray, bf);
+//                List<String> negativeCycle = bf.findNegativeCycle(ratesArray);
+//                List<String> arbitrage = bf.findArbitrageOpportunity(ratesArray);
+//                if(negativeCycle != null){
+//                    System.out.println("Negative cycle");
+//                    for(int i = 0; i <negativeCycle.size(); i++)
+//                    { 
+//                        System.out.print(negativeCycle.get(i)+" ");
+//                    } 
+//                }else
+//                {
+//                    System.out.println("No negative cycle");
+//                }
+//                System.out.println();
+//                if(arbitrage != null)
+//                {
+//                    System.out.println("Arbitrage opitunity: ");
+//                    for(int i = 0; i <arbitrage.size(); i++)
+//                    { 
+//                        System.out.print(arbitrage.get(i)+" ");
+//                    } 
+//                } else
+//                {
+//                    System.out.println("No arbitrage opitunity");
+//                }
+//            }
         updateGraphWithNewRates();
 
     }
@@ -1442,7 +1470,8 @@ public class Exchange extends JFrame {
         switch (selectedSize) {
             case 3:
                 SizeThree three = new SizeThree();
-                negativeGraph = new Graph(three, ratesArray);
+                negativeGraph = new Graph(three, this);
+                
 
                 if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
                     // Call bellmanford function here
@@ -1451,7 +1480,7 @@ public class Exchange extends JFrame {
                 break;
             case 4:
                 SizeFour four = new SizeFour();
-                negativeGraph = new Graph(four, ratesArray);
+                negativeGraph = new Graph(four, this);
 
                 if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
                     // Call bellmanford function here
@@ -1460,7 +1489,7 @@ public class Exchange extends JFrame {
                 break;
             case 5:
                 SizeFive five = new SizeFive();
-                negativeGraph = new Graph(five, ratesArray);
+                negativeGraph = new Graph(five, this);
 
                 if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
                     // Call bellmanford function here
@@ -1469,7 +1498,7 @@ public class Exchange extends JFrame {
                 break;
             case 6:
                 SizeSix six = new SizeSix();
-                negativeGraph = new Graph(six, ratesArray);
+                negativeGraph = new Graph(six, this);
 
                 if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
                     // Call bellmanford function here
@@ -1478,7 +1507,7 @@ public class Exchange extends JFrame {
                 break;
             case 7:
                 SizeSeven seven = new SizeSeven();
-                negativeGraph = new Graph(seven, ratesArray);
+                negativeGraph = new Graph(seven, this);
 
                 if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
                     // Call bellmanford function here
@@ -1487,7 +1516,7 @@ public class Exchange extends JFrame {
                 break;
             case 8:
                 SizeEight eight = new SizeEight();
-                negativeGraph = new Graph(eight, ratesArray);
+                negativeGraph = new Graph(eight, this);
 
                 if (ratesArray[(selectedSize - 1)][(selectedSize - 1)] != null) {
                     // Call bellmanford function here
@@ -1510,32 +1539,32 @@ public class Exchange extends JFrame {
         switch (selectedSize) {
             case 3:
                 SizeThree three = new SizeThree();
-                currencyGraph = new Graph(three, ratesArray);
+                currencyGraph = new Graph(three, this);
 
                 break;
             case 4:
                 SizeFour four = new SizeFour();
-                currencyGraph = new Graph(four, ratesArray);
+                currencyGraph = new Graph(four, this);
 
                 break;
             case 5:
                 SizeFive five = new SizeFive();
-                currencyGraph = new Graph(five, ratesArray);
+                currencyGraph = new Graph(five, this);
 
                 break;
             case 6:
                 SizeSix six = new SizeSix();
-                currencyGraph = new Graph(six, ratesArray);
+                currencyGraph = new Graph(six, this);
 
                 break;
             case 7:
                 SizeSeven seven = new SizeSeven();
-                currencyGraph = new Graph(seven, ratesArray);
+                currencyGraph = new Graph(seven, this);
 
                 break;
             case 8:
                 SizeEight eight = new SizeEight();
-                currencyGraph = new Graph(eight, ratesArray);
+                currencyGraph = new Graph(eight, this);
 
                 break;
         }

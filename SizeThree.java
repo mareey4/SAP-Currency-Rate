@@ -26,7 +26,7 @@ package Currency_Exchange;
 
 /**
  *
- * @author snipi
+ * @author m4ria
  */
 public class SizeThree extends Shapes{
     
