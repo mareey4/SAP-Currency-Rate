@@ -85,7 +85,6 @@ public class Exchange extends JFrame {
     protected Rate[][] negativeValues;
 
     // Variables for arbitrage opportunity
-    protected ArbitrageOppFinder aoFinder;
     protected String arbitrageOpportunity = "Arbitrage Opportunity: ";
 
     // Constructor for the GUI
@@ -95,7 +94,6 @@ public class Exchange extends JFrame {
         this.screenWidth = screenDim.width;
         this.screenHeight = screenDim.height;
         this.exRates = new ExchangeRates(this);
-        this.aoFinder = new ArbitrageOppFinder();
         setComponents();
     }
 
