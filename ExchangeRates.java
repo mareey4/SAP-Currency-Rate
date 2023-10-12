@@ -22,6 +22,7 @@ import org.json.JSONObject;
 public class ExchangeRates {
     // Variables for exchange rates api
     protected final String apiKey = "a7ab00cb947f9df98b98bbde56720152";
+    protected final String backupKey = "117ac3049df8def7d50053fd5700515c";
     protected String apiSymbolsURL = "http://api.exchangeratesapi.io/v1/symbols?access_key=" + apiKey;
     protected String apiRatesURL = "http://api.exchangeratesapi.io/v1/latest?access_key=" + apiKey;
     protected URL url;
