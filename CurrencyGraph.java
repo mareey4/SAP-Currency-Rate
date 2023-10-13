@@ -14,18 +14,21 @@ import javax.swing.JPanel;
  * @author snipi
  */
 public class CurrencyGraph extends JPanel {
-
+    // Variables for drawing the currency exchange graph
     protected final int dotSize = 25;
     protected final int arrowSize = 10;
     protected final int spacing = 5;
     protected Shapes shape;
     protected Exchange exch;
 
+    // Constructor for initializing the variables needed to draw the currency
+    // exchange graph
     public CurrencyGraph(Shapes shape, Exchange exch) {
         this.shape = shape;
         this.exch = exch;
     }
 
+    // Function to draw the graph
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -98,14 +101,4 @@ public class CurrencyGraph extends JPanel {
         
         repaint();
     }
-
-//    private void drawArrowhead(Graphics g, int x1, int y1, int x2, int y2, int arrowSize) {
-//        double angle = Math.atan2(y2 - y1, x2 - x1);
-//        int x3 = (int) (x2 - arrowSize * Math.cos(angle - Math.PI / 6));
-//        int y3 = (int) (y2 - arrowSize * Math.sin(angle - Math.PI / 6));
-//        int x4 = (int) (x2 - arrowSize * Math.cos(angle + Math.PI / 6));
-//        int y4 = (int) (y2 - arrowSize * Math.sin(angle + Math.PI / 6));
-//        g.drawLine(x2, y2, x3, y3);
-//        g.drawLine(x2, y2, x4, y4);
-//    }
 }
