@@ -34,7 +34,7 @@ public class NegativeGraph extends JPanel {
         int numNodes = shape.nodes.length;
 
         if (exch.negativeValues != null) { // Check if negativeValues is not null
-            for (int i = 0; i < numNodes; i++) { // Draws arrows and labels for negative logarithm values
+            for (int i = 0, k = 0; i < numNodes; i++) { // Draws arrows and labels for negative logarithm values
                 Node sourceNode = shape.nodes[i];
                 int x1 = sourceNode.x + dotSize / 2;
                 int y1 = sourceNode.y + dotSize / 2;
@@ -61,28 +61,12 @@ public class NegativeGraph extends JPanel {
                         g.drawLine(arrowX2, arrowY2, arrowX2 - dx2, arrowY2 - dy2);
 
                         // Add labels for negative logarithm if values exist
-                        if (exch.negativeValues[i][j] != null) {
+                        if (exch.negativeValues[i][j] != null && i != j) {
                             String rateLabel = String.format("%.3f", exch.negativeValues[i][j].rate);
                             Font labelFont = new Font("Calibri", Font.PLAIN, 16);
                             g.setFont(labelFont);
-
-                            int labelX1, labelY1, labelX2, labelY2;
-
-                            if (x1 < x2) {
-                                // Arrow goes from left to right
-                                labelX1 = (int) (x1 + (dotSize / 2) * Math.cos(angle)) +25;
-                                labelY1 = (int) (y1 + (dotSize / 2) * Math.sin(angle))+25;
-                                labelX2 = (int) (x2 + (dotSize / 2) * Math.cos(angle))-25;
-                                labelY2 = (int) (y2 + (dotSize / 2) * Math.sin(angle))-25;
-                            } else {
-                                // Arrow goes from right to left
-                                labelX1 = (int) (x1 - (dotSize / 2) * Math.cos(angle))+25;
-                                labelY1 = (int) (y1 - (dotSize / 2) * Math.sin(angle))+25;
-                                labelX2 = (int) (x2 - (dotSize / 2) * Math.cos(angle))-25;
-                                labelY2 = (int) (y2 - (dotSize / 2) * Math.sin(angle))-25;
-                            }
-
-                            g.drawString(targetNode.name + " to " + sourceNode.name + ": " + rateLabel, labelX2, labelY2);
+                            g.drawString(shape.labels[k].name + rateLabel, shape.labels[k].x, shape.labels[k].y);
+                            k++;
                         }
                     }
                 }
