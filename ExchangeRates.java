@@ -20,25 +20,29 @@ import org.json.JSONObject;
  * @author snipi
  */
 public class ExchangeRates {
+
     // Variables for exchange rates api
     protected final String apiKey = "a7ab00cb947f9df98b98bbde56720152";
     protected final String backupKey = "117ac3049df8def7d50053fd5700515c";
-    protected String apiSymbolsURL = "http://api.exchangeratesapi.io/v1/symbols?access_key=" + apiKey;
-    protected String apiRatesURL = "http://api.exchangeratesapi.io/v1/latest?access_key=" + apiKey;
+    protected String apiSymbolsURL = "http://api.exchangeratesapi.io/v1/symbols?access_key=" + backupKey;
+    protected String apiRatesURL = "http://api.exchangeratesapi.io/v1/latest?access_key=" + backupKey;
     protected URL url;
     protected BufferedReader br;
     protected Exchange ex;
     protected BellmanFord bf;
-    
+    protected RateConverter rc;
+
     // Constructor for initializing the variables needed for the exchange rates api
     public ExchangeRates(Exchange ex) {
         this.ex = ex;
         this.bf = new BellmanFord();
+        this.rc = new RateConverter();
         getCurrencyNames();
         getRates();
     }
-    
-    // Function to 
+
+    // Function to retrieve the 3-letter code for all the currencies from the
+    // exchange rates api
     private void getCurrencyNames() {
         try {
             url = new URL(apiSymbolsURL);
@@ -76,6 +80,8 @@ public class ExchangeRates {
         }
     }
 
+    // Function to retrieve the exchange rates from EUD to each of the currencies
+    // available with the exchange rates api
     private void getRates() {
         try {
             url = new URL(apiRatesURL);
@@ -105,6 +111,7 @@ public class ExchangeRates {
                 ex.sortedCurrencyRates = new ArrayList<>(ex.currencyRatesMap.entrySet());
                 Collections.sort(ex.sortedCurrencyRates, Map.Entry.comparingByKey());
 
+                // For printing exchange rates to console, for testing
 //                for (Map.Entry<String, Double> entry : sortedCurrencyRates) {
 //                    System.out.println(entry.getKey() + ": " + entry.getValue());
 //                }
@@ -116,13 +123,20 @@ public class ExchangeRates {
         }
     }
 
+    // Function to recalculate the exchange rates from EUD being the base to the
+    // base currency that the user has selected
     public void calculateExchangeRates() {
+        String keyBase = "";
+
         for (int row = 0; row < ex.selectedSize; row++) {
             for (int col = 0; col < ex.selectedSize; col++) {
                 Rate exRate;
 
+                // Creates a Rate object based on the currencies the user has selected
+                // if any otherwise sets the entry as null
                 if (ex.cbList[row].getSelectedItem() != null && ex.cbList[col].getSelectedItem() != null) {
                     String currencyA = (String) ex.cbList[row].getSelectedItem();
+                    keyBase = currencyA;
                     double fromEUDA = ex.currencyRatesMap.get(currencyA);
 
                     String currencyB = (String) ex.cbList[col].getSelectedItem();
@@ -130,30 +144,38 @@ public class ExchangeRates {
 
                     double rate = (fromEUDB / fromEUDA);
 
-                    exRate = new Rate(ex.labels[row], ex.labels[col], rate);
+                    exRate = new Rate(ex.labelIndex[row], ex.labelIndex[col], rate);
 
-                    if (row != col) {
-
-                    }
                 } else {
                     exRate = null;
                 }
 
                 ex.ratesArray[row][col] = exRate;
             }
+            ex.currencyLabelKey.put(ex.labels[row], keyBase);
         }
-        
-        if(ex.ratesArray[(ex.selectedSize - 1)][ex.selectedSize - 1] != null) {
+
+        if (ex.ratesArray[(ex.selectedSize - 1)][ex.selectedSize - 1] != null) {
             getNegativeLogValues();
+            
+            // Rauen's BellmanFord
+            List<Integer> path = bf.FindPath(ex.ratesArray);
+            if (path != null) {
+                for (int i = 0; i < path.size(); i++) {
+                    System.out.print(path.get(i) + " ");
+                }
+            }
         }
     }
 
+    // Calculates the negative logarithm values of each exchange rate and saves
+    // the values to a Rate array 
     private void getNegativeLogValues() {
         if (ex.ratesArray[(ex.selectedSize - 1)][(ex.selectedSize - 1)] != null) {
             for (int i = 0; i < ex.selectedSize; i++) {
                 for (int j = 0; j < ex.selectedSize; j++) {
-                    double rounded = bf.Rounded(-(Math.log(ex.ratesArray[i][j].rate)));
-                    ex.negativeValues[i][j] = new Rate(ex.ratesArray[i][j].from, ex.ratesArray[i][j].to, rounded);
+                    double rounded = bf.Rounded(-(Math.log10(ex.ratesArray[i][j].rate)));
+                    ex.negativeValues[i][j] = new Rate(ex.ratesArray[i][j].fromIndex, ex.ratesArray[i][j].toIndex, rounded);
                 }
             }
         }
