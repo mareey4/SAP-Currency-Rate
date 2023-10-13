@@ -7,7 +7,6 @@ package Currency_Exchange;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.List;
 import javax.swing.JPanel;
 
 /**
@@ -34,13 +33,13 @@ public class NegativeGraph extends JPanel {
 
         int numNodes = shape.nodes.length;
 
-        if (exch.negativeValues != null) { // Check if ratesArray is not null
-            for (int i = 0; i < numNodes; i++) { // Draws arrows and labels for exchange rates
+        if (exch.negativeValues != null) { // Check if negativeValues is not null
+            for (int i = 0; i < numNodes; i++) { // Draws arrows and labels for negative logarithm values
                 Node sourceNode = shape.nodes[i];
                 int x1 = sourceNode.x + dotSize / 2;
                 int y1 = sourceNode.y + dotSize / 2;
 
-                for (int j = 0; j < numNodes; j++) { // Draws arrows connecting nodes and add labels for exchange
+                for (int j = 0; j < numNodes; j++) { // Draws arrows connecting nodes and add labels for negative logarithm values
                     if (i != j) {
                         Node targetNode = shape.nodes[j];
                         int x2 = targetNode.x + dotSize / 2;
@@ -61,7 +60,7 @@ public class NegativeGraph extends JPanel {
                         g.drawLine(arrowX2, arrowY2, arrowX2 - dx1, arrowY2 - dy1);
                         g.drawLine(arrowX2, arrowY2, arrowX2 - dx2, arrowY2 - dy2);
 
-                        // Add labels for exchange rates if rates exist
+                        // Add labels for negative logarithm if values exist
                         if (exch.negativeValues[i][j] != null) {
                             String rateLabel = String.format("%.3f", exch.negativeValues[i][j].rate);
                             Font labelFont = new Font("Calibri", Font.PLAIN, 16);
@@ -89,7 +88,7 @@ public class NegativeGraph extends JPanel {
                 }
             }
 
-            for (Node node : shape.nodes) {
+            for (Node node : shape.nodes) { // Draws nodes and add labels for negative logarithm values
                 g.drawOval(node.x, node.y, dotSize, dotSize);
                 Font labelFont = new Font("Calibri", Font.BOLD, 16);
                 g.setFont(labelFont);
