@@ -12,10 +12,12 @@ public class Shapes {
     // Variables for drawing the nodes of a graph
     int size;
     Node[] nodes;
+    Node[] labels;
     
     // Parent constructor for initializing the variables of a graph
     public Shapes(int size) {
         this.size = size;
         this.nodes = new Node[this.size];
+        this.labels = new Node[((this.size - 1) * this.size)];
     }
 }
