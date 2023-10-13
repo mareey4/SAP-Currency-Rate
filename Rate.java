@@ -10,14 +10,14 @@ package Currency_Exchange;
  */
 public class Rate {
     // Variables for a rate of exchange between two currencies
-    String from;
-    String to;
+    int fromIndex;
+    int toIndex;
     double rate;
     
     // Constructor for initializing the variables of a rate of exchange
-    public Rate(String from, String to, double rate) {
-        this.from = from;
-        this.to = to;
+    public Rate(int fromIndex, int toIndex, double rate) {
+        this.fromIndex = fromIndex;
+        this.toIndex = toIndex;
         this.rate = rate;
     }
 }
