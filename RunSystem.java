@@ -13,10 +13,8 @@ public class RunSystem {
     // Creates and run the GUI as two separate windows for the two different
     // currency tables
     public static void main(String[] args) {
-        Exchange exchangeOne = new Exchange();
-        Exchange exchangeTwo = new Exchange();
+        Exchange exchange = new Exchange();
         
-        exchangeOne.setBounds(0, 0, exchangeOne.width, exchangeOne.height);
-        exchangeTwo.setBounds(exchangeOne.width, 0, exchangeTwo.width, exchangeTwo.height);
+        exchange.setBounds(0, 0, exchange.width, exchange.height);
     }
 }
