@@ -76,10 +76,8 @@ public class Exchange extends JFrame {
 
     // Variables for the graph
     protected Rate[][] negativeValues;
-
-    // Variables for arbitrage opportunity
-    protected ArbitrageOppFinder aoFinder; // My own logic
-    protected String arbitrageOpportunity = "Arbitrage Opportunity: ";
+    protected String cycle = "";
+    protected String path = "";
 
     // Constructor for the GUI
     public Exchange() {
@@ -88,7 +86,6 @@ public class Exchange extends JFrame {
         this.screenWidth = screenDim.width;
         this.screenHeight = screenDim.height;
         this.exRates = new ExchangeRates(this);
-        this.aoFinder = new ArbitrageOppFinder(); // My own logic
         setComponents();
     }
 
@@ -98,9 +95,9 @@ public class Exchange extends JFrame {
         sizeLabel = new JLabel();
         matrixSizeCB = new JComboBox<>();
         inputsPanel = new JPanel();
-        matrix = new JPanel(); // Comment for testing
-        matrixPanel = new JPanel(); // Comment for testing
-        comboboxPanel = new JPanel(); // Comment for testing
+        matrix = new JPanel();
+        matrixPanel = new JPanel();
+        comboboxPanel = new JPanel();
         currencyGraphPanel = new JPanel();
         cGraphLabel = new JLabel();
         negativeGraphPanel = new JPanel();
@@ -111,8 +108,8 @@ public class Exchange extends JFrame {
         setSizeLabel();
         setMatrixSizeCB();
         setInputsPanel();
-        setMatrixPanel(); // Comment for testing
-        setComboBoxPanel(); // Comment for testing
+        setMatrixPanel();
+        setComboBoxPanel();
         setCurrencyGraphPanel();
         setCGraphLabel();
         setNegativeGraphPanel();
@@ -135,9 +132,9 @@ public class Exchange extends JFrame {
         }
 
         selectedSize = (int) matrixSizeCB.getSelectedItem();
-        int size = selectedSize + 1; // Comment for testing
-        createComboBoxes(); // Comment for testing
-        createMatrix(size); // Comment for testing
+        int size = selectedSize + 1;
+        createComboBoxes();
+        createMatrix(size);
         createCurrencyGraph();
         createNegativeGraph();
         setAnswerLabel();
@@ -148,12 +145,11 @@ public class Exchange extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectedSize = (int) matrixSizeCB.getSelectedItem();
-                int size = selectedSize + 1; // Comment for testing
-                createComboBoxes(); // Comment for testing
-                createMatrix(size); // Comment for testing
+                int size = selectedSize + 1;
+                createComboBoxes();
+                createMatrix(size);
                 createCurrencyGraph();
                 createNegativeGraph();
-                setAnswerLabel();
             }
         });
     }
@@ -215,10 +211,11 @@ public class Exchange extends JFrame {
 
     // Function to set the attributes and properties of the label which prints
     // the arbitrage opportunity
-    private void setAnswerLabel() {
+    protected void setAnswerLabel() {
         answerLabel.setBounds(20, 750, 300, 20);
         answerLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        answerLabel.setText(arbitrageOpportunity);
+        System.out.println(this.cycle + " " + this.path);
+        answerLabel.setText(this.cycle + this.path);
         answerLabel.revalidate();
         answerLabel.repaint();
     }
@@ -230,8 +227,8 @@ public class Exchange extends JFrame {
         mainPanel.setLayout(null);
 
         mainPanel.add(inputsPanel);
-        mainPanel.add(comboboxPanel); // Comment for testing
-        mainPanel.add(matrixPanel); // Comment for testing
+        mainPanel.add(comboboxPanel);
+        mainPanel.add(matrixPanel);
         mainPanel.add(currencyGraphPanel);
         mainPanel.add(cGraphLabel);
         mainPanel.add(negativeGraphPanel);
