@@ -22,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
@@ -43,7 +44,7 @@ public class Exchange extends JFrame {
     private JPanel negativeGraphPanel;
     private JLabel nGraphLabel;
     private JPanel negativeGraph;
-    private JLabel answerLabel;
+    private JTextArea answerLabel;
     private JPanel mainPanel;
 
     // Variables for GUI dimensions
@@ -102,7 +103,7 @@ public class Exchange extends JFrame {
         cGraphLabel = new JLabel();
         negativeGraphPanel = new JPanel();
         nGraphLabel = new JLabel();
-        answerLabel = new JLabel();
+        answerLabel = new JTextArea();
         mainPanel = new JPanel();
 
         setSizeLabel();
@@ -212,9 +213,9 @@ public class Exchange extends JFrame {
     // Function to set the attributes and properties of the label which prints
     // the arbitrage opportunity
     protected void setAnswerLabel() {
-        answerLabel.setBounds(20, 750, 300, 20);
+        answerLabel.setBounds(20, 750, 600, 100);
+        answerLabel.setEditable(false);
         answerLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        System.out.println(this.cycle + " " + this.path);
         answerLabel.setText(this.cycle + this.path);
         answerLabel.revalidate();
         answerLabel.repaint();
