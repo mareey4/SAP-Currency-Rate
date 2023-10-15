@@ -9,9 +9,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import javax.swing.JComboBox;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,13 +33,12 @@ public class ExchangeRates {
     protected BufferedReader br;
     protected Exchange ex;
     protected BellmanFord bf;
-    protected RateConverter rc;
+    protected String[] countryNames;
 
     // Constructor for initializing the variables needed for the exchange rates api
     public ExchangeRates(Exchange ex) {
         this.ex = ex;
-        this.bf = new BellmanFord();
-        this.rc = new RateConverter();
+        this.bf = new BellmanFord(this.ex);
         getCurrencyNames();
         getRates();
     }
@@ -110,11 +112,6 @@ public class ExchangeRates {
 
                 ex.sortedCurrencyRates = new ArrayList<>(ex.currencyRatesMap.entrySet());
                 Collections.sort(ex.sortedCurrencyRates, Map.Entry.comparingByKey());
-
-                // For printing exchange rates to console, for testing
-//                for (Map.Entry<String, Double> entry : sortedCurrencyRates) {
-//                    System.out.println(entry.getKey() + ": " + entry.getValue());
-//                }
             } else {
                 System.err.println("API request failed with response code: " + responseCode);
             }
@@ -127,7 +124,7 @@ public class ExchangeRates {
     // base currency that the user has selected
     public void calculateExchangeRates() {
         String keyBase = "";
-
+        countryNames = new String[ex.selectedSize];
         for (int row = 0; row < ex.selectedSize; row++) {
             for (int col = 0; col < ex.selectedSize; col++) {
                 Rate exRate;
@@ -142,7 +139,7 @@ public class ExchangeRates {
                     String currencyB = (String) ex.cbList[col].getSelectedItem();
                     double fromEUDB = ex.currencyRatesMap.get(currencyB);
 
-                    double rate = (fromEUDB / fromEUDA);
+                    double rate = Rounded((fromEUDB / fromEUDA));
 
                     exRate = new Rate(ex.labelIndex[row], ex.labelIndex[col], rate);
 
@@ -152,19 +149,48 @@ public class ExchangeRates {
 
                 ex.ratesArray[row][col] = exRate;
             }
+
             ex.currencyLabelKey.put(ex.labels[row], keyBase);
         }
+        
+        // Adds selected country to an array
+        for (int i = 0; i < ex.selectedSize; i++) {
+            if (ex.cbList[i].getSelectedItem() != null) {
+                countryNames[i] = (String) ex.cbList[i].getSelectedItem();
+            }
 
-        if (ex.ratesArray[(ex.selectedSize - 1)][ex.selectedSize - 1] != null) {
+        }
+        
+        // Boolean used to check if all currency selections are filled
+        boolean fullMatrix = true;
+        
+        // Loop through the array of comboboxes and check all selections are filled
+        for (JComboBox current : ex.cbList) {
+            if (current.getSelectedItem() == null) {
+                fullMatrix = false;
+            }
+        }
+        
+        if (fullMatrix) {
             getNegativeLogValues();
             
-            // Rauen's BellmanFord
+            // Reset the printed strings
+            ex.path = "";
+            ex.cycle = "";
+
+            // Finds the path from the BellmanFord algorithm and adds to string label
             List<Integer> path = bf.FindPath(ex.ratesArray);
             if (path != null) {
                 for (int i = 0; i < path.size(); i++) {
-                    System.out.print(path.get(i) + " ");
+                    if (i == path.size() - 1) {
+                        ex.path += countryNames[path.get(i)] + " ";
+                    } else {
+                        ex.path += countryNames[path.get(i)] + "-> ";
+                    }
                 }
             }
+
+            ex.setAnswerLabel();
         }
     }
 
@@ -174,10 +200,16 @@ public class ExchangeRates {
         if (ex.ratesArray[(ex.selectedSize - 1)][(ex.selectedSize - 1)] != null) {
             for (int i = 0; i < ex.selectedSize; i++) {
                 for (int j = 0; j < ex.selectedSize; j++) {
-                    double rounded = bf.Rounded(-(Math.log10(ex.ratesArray[i][j].rate)));
+                    double rounded = Rounded(-(Math.log10(ex.ratesArray[i][j].rate)));
                     ex.negativeValues[i][j] = new Rate(ex.ratesArray[i][j].fromIndex, ex.ratesArray[i][j].toIndex, rounded);
                 }
             }
         }
+    }
+    
+    // Rounds the rate values to 3DP
+    public double Rounded(double value) {
+        DecimalFormat decimalFormat = new DecimalFormat("#.###");
+        return Double.parseDouble(decimalFormat.format(value));
     }
 }
